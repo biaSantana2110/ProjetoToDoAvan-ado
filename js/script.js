@@ -3,8 +3,11 @@ const todoForm = document.querySelector("#todo-form");
 const todoInput = document.querySelector("#todo-input");
 const todoList = document.querySelector("#todo-list");
 const editForm = document.querySelector("#edit-form");
-const editIput = document.querySelector("#edit-input");
+const editInput = document.querySelector("#edit-input");
 const cancelEditBtn = document.querySelector("#cancel-edit-btn");
+const searchInput = document.querySelector("#search-input");
+const eraseBtn = document.querySelector("#erase-button");
+const filterBtn = document.querySelector("#filter-select");
 
 let oldInputValue;
 
@@ -42,7 +45,37 @@ const toggleForms = () => {
     todoForm.classList.toggle("hide");
     todoList.classList.toggle("hide");
 
-}
+};
+
+const updateTodo = (text) => {
+
+    const todos = document.querySelectorAll(".todo")
+
+    todos.forEach((todo) => {
+        let todoTitle = todo.querySelector("h3")
+
+        if (todoTitle.innerText === oldInputValue) {
+            todoTitle.innerText = text
+        }
+    })
+};
+
+const getSearchTodos = (search) => {
+    const todos = document.querySelectorAll(".todo");
+
+    todos.forEach((todo) => {
+        let todoTitle = todo.querySelector("h3").innerText.toLowerCase();
+
+        const normalizedSearch = search.toLowerCase();
+        
+        todo.style.display = "flex";
+
+        if (!todoTitle.includes(normalizedSearch)) {
+            todo.style.display = "none";
+        }
+    });
+
+};
 
 
 //Eventos
@@ -79,7 +112,7 @@ document.addEventListener("click", (e) => {
         toggleForms();
 
         editInput.value = todoTitle
-        oldInputValue.value = todoTitle
+        oldInputValue = todoTitle
     }
 });
 
@@ -92,10 +125,29 @@ cancelEditBtn.addEventListener("click", (e) => {
 editForm.addEventListener("submit", (e) => {
     e.preventDefault()
 
-    const editInputValue = editIput.value
+    const editInputValue = editInput.value
 
     if (editInputValue) {
         updateTodo(editInputValue)
     }
     toggleForms()
-})
+});
+
+searchInput.addEventListener("keyup" , (e) => {
+    const search = e.target.value;
+    getSearchTodos(search);
+});
+
+eraseBtn.addEventListener("click" , (e) => {
+    e.preventDefault();
+
+    searchInput.value = "";
+
+    searchInput.dispatchEvent(new Event("keyup"));
+});
+
+filterBtn.addEventListener("change" , (e) => {
+    const filterValue = e.target.value;
+
+    filterTodos(filterValue);
+});
